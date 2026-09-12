@@ -28,7 +28,7 @@
 Установите пакет через Composer:
 
 ```bash
-composer require evgeny-korovin/laravel-query-logger
+composer require evgeny-korovin/laravel-query-logger --dev
 ```
 
 Laravel автоматически обнаружит service provider пакета. Миграции загружаются автоматически и будут выполнены при обычном запуске миграций:

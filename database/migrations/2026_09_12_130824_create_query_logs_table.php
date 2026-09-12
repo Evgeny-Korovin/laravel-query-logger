@@ -16,6 +16,9 @@ return new class extends Migration {
             $table->string('route_name')->nullable();
             $table->text('url')->nullable();
             $table->string('ip_address', 45)->nullable();
+            $table->string('caller_class')->nullable();
+            $table->string('caller_method')->nullable();
+            $table->text('explain_result')->nullable();
             $table->timestamp('created_at')->index();
         });
     }
