@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "godmode/query-logger",
+    "name": "evgeny-korovin/laravel-query-logger",
     "description": "SQL query logging and inspection tools for Laravel.",
     "type": "library",
     "license": "MIT",

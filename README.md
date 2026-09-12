@@ -1,6 +1,6 @@
 # Laravel Query Logger
 
-`godmode/query-logger` — пакет для Laravel, который автоматически записывает выполненные SQL-запросы и помогает находить медленные места в приложении.
+`evgeny-korovin/laravel-query-logger` — пакет для Laravel, который автоматически записывает выполненные SQL-запросы и помогает находить медленные места в приложении.
 
 ## Возможности
 
@@ -28,7 +28,7 @@
 Установите пакет через Composer:
 
 ```bash
-composer require godmode/query-logger
+composer require evgeny-korovin/laravel-query-logger
 ```
 
 Laravel автоматически обнаружит service provider пакета. Миграции загружаются автоматически и будут выполнены при обычном запуске миграций:
