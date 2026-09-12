@@ -1,65 +1,67 @@
 # Laravel Query Logger
 
-`evgeny-korovin/laravel-query-logger` — пакет для Laravel, который автоматически записывает выполненные SQL-запросы и помогает находить медленные места в приложении.
+`evgeny-korovin/laravel-query-logger` is a Laravel package that automatically records executed SQL queries and helps you find slow parts of your application.
 
-## Возможности
+[Русская версия](README.ru.md)
 
-- автоматическое логирование SQL-запросов через `DB::listen`;
-- сохранение фактического SQL с подставленными bindings;
-- сохранение времени выполнения, подключения к БД и времени выполнения запроса;
-- сохранение HTTP-контекста: route name, URL и IP-адрес;
-- определение класса и метода приложения, из которого был вызван запрос;
-- веб-интерфейс со списком запросов, поиском, сортировкой и пагинацией;
-- цветовая индикация запросов по времени выполнения;
-- просмотр `EXPLAIN` для запросов и `EXPLAIN ANALYZE` для `SELECT`;
-- кэширование результата EXPLAIN в записи запроса;
-- удаление всех сохранённых логов из интерфейса;
-- необязательные AI-рекомендации по оптимизации запросов через OpenCode;
-- безопасное поведение логгера: ошибка записи лога не прерывает исходный запрос.
+## Features
 
-## Требования
+- automatic SQL query logging through `DB::listen`;
+- storage of the actual SQL with bindings substituted;
+- storage of execution time, database connection, and query timestamp;
+- storage of the HTTP context: route name, URL, and IP address;
+- detection of the application class and method that issued the query;
+- a web interface with query listing, search, sorting, and pagination;
+- color-coded queries based on execution time;
+- `EXPLAIN` support for queries and `EXPLAIN ANALYZE` for `SELECT` statements;
+- caching of the EXPLAIN result in the query record;
+- deletion of all stored logs from the interface;
+- optional AI query optimization recommendations through OpenCode;
+- safe logger behavior: a logging failure does not interrupt the original query.
 
-- PHP 8.2 или новее;
-- Laravel 12 или 13;
-- поддерживаемая Laravel база данных с таблицей `query_logs`.
+## Requirements
 
-## Установка
+- PHP 8.2 or newer;
+- Laravel 12 or 13;
+- a Laravel-supported database with a `query_logs` table.
 
-Установите пакет через Composer:
+## Installation
+
+Install the package through Composer:
 
 ```bash
 composer require evgeny-korovin/laravel-query-logger --dev
 ```
 
-Laravel автоматически обнаружит service provider пакета. Миграции загружаются автоматически и будут выполнены при обычном запуске миграций:
+Laravel will automatically discover the package service provider. Migrations are loaded automatically and will run with the regular migration command:
 
 ```bash
 php artisan migrate
 ```
 
-После установки откройте:
+After installation, open:
 
 ```text
 /sql-queries
 ```
 
-Например, если приложение запущено на `http://localhost`, интерфейс будет доступен по адресу `http://localhost/sql-queries`.
+For example, if your application is running at `http://localhost`, the interface will be available at `http://localhost/sql-queries`.
 
-## Конфигурация
+## Configuration
 
-При необходимости опубликуйте конфигурацию:
+Publish the configuration file if needed:
 
 ```bash
 php artisan vendor:publish --tag=query-logger-config
 ```
 
-Файл конфигурации будет расположен в `config/query-logger.php`.
+The configuration file will be located at `config/query-logger.php`.
 
-## AI-рекомендации
+## AI Recommendations
 
-Кнопка **AI-совет** отправляет SQL и результат EXPLAIN в выбранный AI-провайдер. Пакет поддерживает провайдеры с OpenAI-compatible API. В конфигурации можно указать URL, API-ключ, модель и дополнительные заголовки для каждого провайдера.
+The **AI advice** button sends the SQL and EXPLAIN result to the selected AI provider. The package supports providers with an OpenAI-compatible API. You can configure the URL, API key, model, and additional headers for each provider.
 
-По умолчанию используется OpenCode:
+OpenCode is used by default:
 
 ```dotenv
 QUERY_LOGGER_AI_PROVIDER=opencode
@@ -67,7 +69,7 @@ QUERY_LOGGER_AI_MODEL=big-pickle
 OPENCODE_API_KEY=your-api-key
 ```
 
-Чтобы использовать OpenAI, укажите:
+To use OpenAI, set:
 
 ```dotenv
 QUERY_LOGGER_AI_PROVIDER=openai
@@ -75,7 +77,7 @@ QUERY_LOGGER_AI_MODEL=gpt-4o-mini
 OPENAI_API_KEY=your-api-key
 ```
 
-Модель можно переопределить для конкретного провайдера через `OPENCODE_MODEL` или `OPENAI_MODEL`. Список провайдеров, их URL и дополнительные заголовки настраиваются в `config/query-logger.php`:
+The model can be overridden for a specific provider with `OPENCODE_MODEL` or `OPENAI_MODEL`. The list of providers, their URLs, and additional headers are configured in `config/query-logger.php`:
 
 ```php
 'ai' => [
@@ -98,25 +100,27 @@ OPENAI_API_KEY=your-api-key
 ],
 ```
 
-Если `QUERY_LOGGER_AI_MODEL` не указан, используется модель выбранного провайдера. Если API-ключ выбранного провайдера не настроен, остальные возможности пакета продолжают работать, а AI-рекомендации недоступны.
+If `QUERY_LOGGER_AI_MODEL` is not set, the selected provider's model is used. If the selected provider's API key is not configured, the package's other features continue to work, but AI recommendations will be unavailable.
 
-## Маршруты
+## Routes
 
-Пакет регистрирует маршруты с middleware `web`:
+The package registers routes with the `web` middleware:
 
-| Метод | URI | Назначение |
+| Method | URI | Purpose |
 | --- | --- | --- |
-| `GET` | `/sql-queries` | список и поиск запросов |
-| `DELETE` | `/sql-queries` | удалить все записи |
-| `GET` | `/sql-queries/{queryLog}/explain` | получить EXPLAIN |
-| `POST` | `/sql-queries/{queryLog}/ai-advice` | получить AI-рекомендацию |
+| `GET` | `/sql-queries` | list and search queries |
+| `DELETE` | `/sql-queries` | delete all records |
+| `GET` | `/sql-queries/{queryLog}/explain` | get EXPLAIN |
+| `POST` | `/sql-queries/{queryLog}/ai-advice` | get AI recommendations |
 
-Маршруты по умолчанию не ограничены авторизацией. В production обязательно защитите интерфейс и операции удаления своим middleware или ограничьте доступ на уровне веб-сервера.
+Routes are not restricted by authorization by default. In production, make sure to protect the interface and delete operations with your own middleware or restrict access at the web server level.
 
-## Что не записывается
+## What Is Not Logged
 
-Пакет игнорирует запросы к таблице `query_logs`, чтобы не создавать рекурсию, а также запросы `EXPLAIN`, выполняемые самим интерфейсом.
+The package ignores queries against the `query_logs` table to prevent recursion, as well as `EXPLAIN` queries executed by the interface itself.
 
-## Лицензия
+## License
 
-Пакет распространяется под лицензией [MIT](https://opensource.org/licenses/MIT).
+This package is distributed under the [MIT](https://opensource.org/licenses/MIT) license.
+
+[Русская версия](README.ru.md)
