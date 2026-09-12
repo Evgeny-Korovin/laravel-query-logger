@@ -57,14 +57,48 @@ php artisan vendor:publish --tag=query-logger-config
 
 ## AI-рекомендации
 
-Кнопка **AI-совет** использует OpenCode для анализа SQL и результата EXPLAIN. Функция необязательна и включается переменными окружения:
+Кнопка **AI-совет** отправляет SQL и результат EXPLAIN в выбранный AI-провайдер. Пакет поддерживает провайдеры с OpenAI-compatible API. В конфигурации можно указать URL, API-ключ, модель и дополнительные заголовки для каждого провайдера.
+
+По умолчанию используется OpenCode:
 
 ```dotenv
+QUERY_LOGGER_AI_PROVIDER=opencode
+QUERY_LOGGER_AI_MODEL=big-pickle
 OPENCODE_API_KEY=your-api-key
-OPENCODE_MODEL=big-pickle
 ```
 
-Модель по умолчанию — `big-pickle`. Если `OPENCODE_API_KEY` не указан, остальные возможности пакета продолжают работать, а AI-рекомендации недоступны.
+Чтобы использовать OpenAI, укажите:
+
+```dotenv
+QUERY_LOGGER_AI_PROVIDER=openai
+QUERY_LOGGER_AI_MODEL=gpt-4o-mini
+OPENAI_API_KEY=your-api-key
+```
+
+Модель можно переопределить для конкретного провайдера через `OPENCODE_MODEL` или `OPENAI_MODEL`. Список провайдеров, их URL и дополнительные заголовки настраиваются в `config/query-logger.php`:
+
+```php
+'ai' => [
+    'provider' => env('QUERY_LOGGER_AI_PROVIDER', 'opencode'),
+    'model' => env('QUERY_LOGGER_AI_MODEL'),
+    'providers' => [
+        'opencode' => [
+            'url' => env('OPENCODE_API_URL', 'https://opencode.ai/zen/v1/chat/completions'),
+            'key' => env('OPENCODE_API_KEY'),
+            'model' => env('OPENCODE_MODEL', 'big-pickle'),
+            'headers' => [],
+        ],
+        'openai' => [
+            'url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),
+            'key' => env('OPENAI_API_KEY'),
+            'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+            'headers' => [],
+        ],
+    ],
+],
+```
+
+Если `QUERY_LOGGER_AI_MODEL` не указан, используется модель выбранного провайдера. Если API-ключ выбранного провайдера не настроен, остальные возможности пакета продолжают работать, а AI-рекомендации недоступны.
 
 ## Маршруты
 

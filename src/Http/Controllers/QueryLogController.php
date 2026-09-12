@@ -53,23 +53,42 @@ class QueryLogController
 
     public function aiAdvice(QueryLog $queryLog): JsonResponse
     {
-        if (! config('query-logger.opencode.key')) {
-            return response()->json(['message' => 'OpenCode API key не настроен. Укажите OPENCODE_API_KEY.'], 503);
+        $providerName = (string) config('query-logger.ai.provider', 'opencode');
+        $providers    = config('query-logger.ai.providers', []);
+        $provider     = is_array($providers) ? ($providers[$providerName] ?? null) : null;
+
+        if (! is_array($provider)) {
+            return response()->json(['message' => "AI-провайдер '{$providerName}' не настроен."], 503);
+        }
+
+        if (! ($provider['key'] ?? null)) {
+            return response()->json(['message' => "API key для провайдера '{$providerName}' не настроен."], 503);
+        }
+
+        $url   = $provider['url'] ?? null;
+        $model = config('query-logger.ai.model') ?: ($provider['model'] ?? null);
+
+        if (! $url || ! $model) {
+            return response()->json(['message' => "URL или модель для провайдера '{$providerName}' не настроены."], 503);
         }
 
         try {
             $explain  = $this->getExplainResult($queryLog);
             $prompt   = "Вот SQL запрос {$queryLog->sql}, а вот его EXPLAIN {$explain}. Дай пошаговый план по улучшению производительности запроса.";
-            $response = Http::withToken(config('query-logger.opencode.key'))
-                ->withHeaders(['x-opencode-session' => 'query-log-'.$queryLog->id])
-                ->timeout(60)
-                ->post('https://opencode.ai/zen/v1/chat/completions', [
-                    'model'    => config('query-logger.opencode.model', 'big-pickle'),
+            $headers  = is_array($provider['headers'] ?? null) ? $provider['headers'] : [];
+
+            if ($providerName === 'opencode') {
+                $headers['x-opencode-session'] = 'query-log-'.$queryLog->id;
+            }
+
+            $request = Http::withHeaders($headers)->timeout(60);
+            $response = $request->withToken($provider['key'])->post($url, [
+                    'model'    => $model,
                     'messages' => [['role' => 'user', 'content' => $prompt]],
                 ]);
 
             if ($response->tooManyRequests()) {
-                return response()->json(['message' => 'Бесплатная модель OpenCode временно недоступна или превышен лимит запросов.'], 429);
+                return response()->json(['message' => "Провайдер '{$providerName}' временно недоступен или превышен лимит запросов."], 429);
             }
 
             $response->throw();
@@ -81,7 +100,7 @@ class QueryLogController
                 'advice_html' => Str::markdown($advice, ['html_input' => 'strip', 'allow_unsafe_links' => false]),
             ]);
         } catch (Throwable $exception) {
-            return response()->json(['message' => 'Не удалось получить AI-совет OpenCode: '.$exception->getMessage()], 422);
+            return response()->json(['message' => "Не удалось получить AI-совет от '{$providerName}': ".$exception->getMessage()], 422);
         }
     }
 
