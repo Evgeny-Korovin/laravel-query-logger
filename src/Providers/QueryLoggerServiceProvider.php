@@ -18,6 +18,7 @@ class QueryLoggerServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'query-logger');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'query-logger');
 
         if ($this->app->runningInConsole()) {

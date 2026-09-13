@@ -47,7 +47,7 @@ class QueryLogController
         try {
             return response()->json(['explain' => $this->getExplainResult($queryLog)]);
         } catch (Throwable $exception) {
-            return response()->json(['message' => 'Не удалось выполнить EXPLAIN: '.$exception->getMessage()], 422);
+            return response()->json(['message' => __('query-logger::messages.explain_error', ['message' => $exception->getMessage()])], 422);
         }
     }
 
@@ -58,23 +58,23 @@ class QueryLogController
         $provider     = is_array($providers) ? ($providers[$providerName] ?? null) : null;
 
         if (! is_array($provider)) {
-            return response()->json(['message' => "AI-провайдер '{$providerName}' не настроен."], 503);
+            return response()->json(['message' => __('query-logger::messages.provider_not_configured', ['provider' => $providerName])], 503);
         }
 
         if (! ($provider['key'] ?? null)) {
-            return response()->json(['message' => "API key для провайдера '{$providerName}' не настроен."], 503);
+            return response()->json(['message' => __('query-logger::messages.api_key_not_configured', ['provider' => $providerName])], 503);
         }
 
         $url   = $provider['url'] ?? null;
         $model = config('query-logger.ai.model') ?: ($provider['model'] ?? null);
 
         if (! $url || ! $model) {
-            return response()->json(['message' => "URL или модель для провайдера '{$providerName}' не настроены."], 503);
+            return response()->json(['message' => __('query-logger::messages.provider_settings_not_configured', ['provider' => $providerName])], 503);
         }
 
         try {
             $explain  = $this->getExplainResult($queryLog);
-            $prompt   = "Вот SQL запрос {$queryLog->sql}, а вот его EXPLAIN {$explain}. Дай пошаговый план по улучшению производительности запроса.";
+            $prompt   = __('query-logger::messages.ai_prompt', ['sql' => $queryLog->sql, 'explain' => $explain]);
             $headers  = is_array($provider['headers'] ?? null) ? $provider['headers'] : [];
 
             if ($providerName === 'opencode') {
@@ -88,7 +88,7 @@ class QueryLogController
                 ]);
 
             if ($response->tooManyRequests()) {
-                return response()->json(['message' => "Провайдер '{$providerName}' временно недоступен или превышен лимит запросов."], 429);
+                return response()->json(['message' => __('query-logger::messages.provider_unavailable', ['provider' => $providerName])], 429);
             }
 
             $response->throw();
@@ -100,7 +100,7 @@ class QueryLogController
                 'advice_html' => Str::markdown($advice, ['html_input' => 'strip', 'allow_unsafe_links' => false]),
             ]);
         } catch (Throwable $exception) {
-            return response()->json(['message' => "Не удалось получить AI-совет от '{$providerName}': ".$exception->getMessage()], 422);
+            return response()->json(['message' => __('query-logger::messages.ai_error', ['provider' => $providerName, 'message' => $exception->getMessage()])], 422);
         }
     }
 
