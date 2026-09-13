@@ -123,4 +123,6 @@ The package ignores queries against the `query_logs` table to prevent recursion,
 
 This package is distributed under the [MIT](https://opensource.org/licenses/MIT) license.
 
+[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white)](https://t.me/korovin_evgeny)
+
 [Русская версия](README.ru.md)
