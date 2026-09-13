@@ -29,6 +29,8 @@
             $nextExecutionDirection = $sort === 'time_ms' && $direction === 'asc' ? 'desc' : 'asc';
             $isRussian = str_starts_with(app()->getLocale(), 'ru');
             $dateFormat = $isRussian ? 'd.m.Y H:i:s' : 'm/d/Y H:i:s';
+            $warningThreshold = config('query-logger.thresholds.warning_ms', 50);
+            $criticalThreshold = config('query-logger.thresholds.critical_ms', 100);
         @endphp
     </head>
     <body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -77,9 +79,9 @@
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                             @forelse ($queryLogs as $queryLog)
                                 <tr @class([
-                                    'align-top hover:bg-slate-50 dark:hover:bg-slate-800/60' => $queryLog->time_ms <= 50,
-                                    'bg-yellow-50 dark:bg-yellow-950/30' => $queryLog->time_ms > 50 && $queryLog->time_ms <= 100,
-                                    'bg-red-50 dark:bg-red-950/40' => $queryLog->time_ms > 100,
+                                    'align-top hover:bg-slate-50 dark:hover:bg-slate-800/60' => $queryLog->time_ms <= $warningThreshold,
+                                    'bg-yellow-50 dark:bg-yellow-950/30' => $queryLog->time_ms > $warningThreshold && $queryLog->time_ms <= $criticalThreshold,
+                                    'bg-red-50 dark:bg-red-950/40' => $queryLog->time_ms > $criticalThreshold,
                                 ])>
                                     <td class="whitespace-nowrap px-4 py-4 text-slate-500">{{ $queryLog->created_at?->format($dateFormat) }}</td>
                                     <td class="max-w-2xl px-4 py-4">

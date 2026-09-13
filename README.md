@@ -57,6 +57,15 @@ php artisan vendor:publish --tag=query-logger-config
 
 The configuration file will be located at `config/query-logger.php`.
 
+Query execution time thresholds can be configured using environment variables:
+
+```dotenv
+QUERY_LOGGER_WARNING_THRESHOLD_MS=50
+QUERY_LOGGER_CRITICAL_THRESHOLD_MS=100
+```
+
+Queries up to the warning threshold use the regular row color, queries between the warning and critical thresholds are highlighted in yellow, and queries above the critical threshold are highlighted in red.
+
 ## AI Recommendations
 
 The **AI advice** button sends the SQL and EXPLAIN result to the selected AI provider. The package supports providers with an OpenAI-compatible API. You can configure the URL, API key, model, and additional headers for each provider.

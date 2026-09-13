@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'thresholds' => [
+        'warning_ms'  => env('QUERY_LOGGER_WARNING_THRESHOLD_MS', 50),
+        'critical_ms' => env('QUERY_LOGGER_CRITICAL_THRESHOLD_MS', 100),
+    ],
+
     'ai' => [
         'provider' => env('QUERY_LOGGER_AI_PROVIDER', 'opencode'),
         'model'    => env('QUERY_LOGGER_AI_MODEL'),
