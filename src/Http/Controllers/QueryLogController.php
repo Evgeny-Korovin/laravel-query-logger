@@ -123,7 +123,8 @@ class QueryLogController
         }
 
         $explain = implode(PHP_EOL, $lines);
-        $queryLog->update(['explain_result' => $explain]);
+        $queryLog->explain_result = $explain;
+        $queryLog->save();
 
         return $explain;
     }
