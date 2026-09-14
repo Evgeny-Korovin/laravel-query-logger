@@ -113,7 +113,28 @@ class QueryLogController
         $sql        = trim($queryLog->sql);
         $isSelect   = preg_match('/^select\b/i', $sql) === 1;
         $explainSql = ($isSelect ? 'EXPLAIN ANALYZE ' : 'EXPLAIN ').$sql;
-        $rows       = DB::connection($queryLog->connection)->select($explainSql);
+        $connection = DB::connection($queryLog->connection);
+
+        try {
+            $rows = $connection->select($explainSql);
+        } catch (Throwable $exception) {
+            if ($connection->getDriverName() !== 'pgsql') {
+                throw $exception;
+            }
+
+            // PostgreSQL requires boolean literals when a raw SQL logger rendered true as 1.
+            $booleanExplainSql = preg_replace(
+                '/((?<![a-z0-9_])(?:"[^"]+"|[a-z_][a-z0-9_]*)(?:\s*\.\s*(?:"[^"]+"|[a-z_][a-z0-9_]*))?\s*=\s*)1\b/i',
+                '$1true',
+                $explainSql,
+            );
+
+            if (! is_string($booleanExplainSql) || $booleanExplainSql === $explainSql) {
+                throw $exception;
+            }
+
+            $rows = $connection->select($booleanExplainSql);
+        }
         $lines      = [];
 
         foreach ($rows as $row) {
