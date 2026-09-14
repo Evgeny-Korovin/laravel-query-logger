@@ -39,6 +39,8 @@ Laravel will automatically discover the package service provider. Migrations are
 php artisan migrate
 ```
 
+The query list includes Tailwind CSS through its official CDN script, so it works without adding npm packages or changing the application's frontend build.
+
 After installation, open:
 
 ```text
