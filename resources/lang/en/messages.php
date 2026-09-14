@@ -26,7 +26,7 @@ return [
     'explain_failed' => 'Could not retrieve the execution plan.',
     'ai_loading' => 'Preparing EXPLAIN and AI advice...',
     'ai_failed' => 'Could not get AI advice.',
-    'ai_prompt' => 'Here is the SQL query: :sql. Here is its EXPLAIN result: :explain. Provide a step-by-step plan to improve the query performance.',
+    'ai_prompt' => 'Here is the SQL query: :sql. Here is its EXPLAIN result: :explain. Provide a step-by-step plan to improve the query performance. Answer in :locale.',
     'explain_error' => 'Could not run EXPLAIN: :message',
     'provider_not_configured' => "AI provider ':provider' is not configured.",
     'api_key_not_configured' => "The API key for provider ':provider' is not configured.",

@@ -26,7 +26,7 @@ return [
     'explain_failed' => 'Не удалось получить план выполнения.',
     'ai_loading' => 'Подготовка EXPLAIN и AI-совета...',
     'ai_failed' => 'Не удалось получить AI-совет.',
-    'ai_prompt' => 'Вот SQL запрос: :sql. Вот его EXPLAIN: :explain. Дай пошаговый план по улучшению производительности запроса.',
+    'ai_prompt' => 'Вот SQL запрос: :sql. Вот его EXPLAIN: :explain. Дай пошаговый план по улучшению производительности запроса. Отвечай на :locale языке.',
     'explain_error' => 'Не удалось выполнить EXPLAIN: :message',
     'provider_not_configured' => "AI-провайдер ':provider' не настроен.",
     'api_key_not_configured' => "API key для провайдера ':provider' не настроен.",

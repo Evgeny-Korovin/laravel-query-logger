@@ -74,7 +74,8 @@ class QueryLogController
 
         try {
             $explain  = $this->getExplainResult($queryLog);
-            $prompt   = __('query-logger::messages.ai_prompt', ['sql' => $queryLog->sql, 'explain' => $explain]);
+            $locale   = str_starts_with(app()->getLocale(), 'ru') ? 'русском' : 'English';
+            $prompt   = __('query-logger::messages.ai_prompt', ['sql' => $queryLog->sql, 'explain' => $explain, 'locale' => $locale]);
             $headers  = is_array($provider['headers'] ?? null) ? $provider['headers'] : [];
 
             if ($providerName === 'opencode') {
