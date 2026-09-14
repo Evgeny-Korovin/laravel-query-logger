@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ __('query-logger::messages.page_title') }}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
         <style>
             [data-ai-result] p { margin: .75rem 0; }
             [data-ai-result] p:first-child { margin-top: 0; }
